@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Flashcards</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .flashcard {
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 600px;
+            margin: 20px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            background-color: #f8f8f8;
+            transition: all 0.3s;
+        }
+
+        button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .correct {
+            background-color: #90EE90 !important;
+        }
+
+        .error-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #ffcccc;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .score {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="score">Score: <span id="score">0</span></div>
+    <div class="flashcard">
+        <h2 id="question"></h2>
+        <div class="options" id="options"></div>
+    </div>
+    <div class="error-popup" id="errorPopup">
+        Incorrect answer. Please try again.
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "What is the primary purpose of a test case in QA?",
+                options: [
+                    "To find defects in the system",
+                    "To document user requirements",
+                    "To measure code coverage",
+                    "To automate testing processes"
+                ],
+                correct: 0,
+                explanation: "The primary purpose of a test case is to systematically find defects in the system."
+            },
+            {
+                question: "Which WebDriver method is used to locate elements in Selenium?",
+                options: [
+                    "find_element()",
+                    "locate()",
+                    "search_element()",
+                    "get_element()"
+                ],
+                correct: 0,
+                explanation: "find_element() is the correct method to locate elements in Selenium WebDriver."
+            },
+            // Add more questions here
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            document.getElementById('question').textContent = question.question;
+            const optionsDiv = document.getElementById('options');
+            optionsDiv.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.onclick = () => checkAnswer(index);
+                optionsDiv.appendChild(button);
+            });
+        }
+
+        function checkAnswer(selectedIndex) {
+            const question = questions[currentQuestion];
+            if (selectedIndex === question.correct) {
+                score++;
+                document.getElementById('score').textContent = score;
+                currentQuestion = (currentQuestion + 1) % questions.length;
+                displayQuestion();
+            } else {
+                document.getElementById('errorPopup').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('errorPopup').style.display = 'none';
+                }, 1500);
+            }
+        }
+
+        // Initialize first question
+        displayQuestion();
+
+        // Optional: AI Integration Idea
+        /*
+        To integrate AI-generated questions:
+        1. Use OpenAI's API (https://platform.openai.com/docs/api-reference)
+        2. Create a prompt to generate QA testing questions
+        3. Verify answers through the API
+        4. Cache generated questions to avoid repeated API calls
+        
+        Example API call:
+        async function generateQuestion() {
+            const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer YOUR_API_KEY'
+                },
+                body: JSON.stringify({
+                    model: "gpt-3.5-turbo",
+                    messages: [{
+                        role: "user",
+                        content: "Generate a multiple-choice question about software testing with 4 options and mark the correct answer."
+                    }]
+                })
+            });
+            // Process response and add to questions array
+        }
+        */
+    </script>
+</body>
+</html>
